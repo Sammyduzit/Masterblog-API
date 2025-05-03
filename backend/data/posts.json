@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "title": "First post",
+        "content": "This is the first post."
+    },
+    {
+        "id": 2,
+        "title": "Second post",
+        "content": "This is the second post."
+    },
+    {
+        "id": 3,
+        "title": "X post",
+        "content": "X is the second post."
+    },
+    {
+        "id": 4,
+        "title": "C post",
+        "content": "C is the second post."
+    },
+    {
+        "id": 5,
+        "title": " testputwithdata",
+        "content": "testdatabackend"
+    },
+    {
+        "id": 6,
+        "title": " 777",
+        "content": "waFCAEV"
+    }
+]
