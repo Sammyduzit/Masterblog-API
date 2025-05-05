@@ -5,7 +5,7 @@ Data handling for Masterblog API
 import json
 import os
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'static')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 BLOGPOSTS = os.path.join(DATA_DIR, 'posts.json')
 
 
