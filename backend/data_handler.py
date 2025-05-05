@@ -3,9 +3,10 @@ Data handling for Masterblog API
 """
 
 import json
+import os
 
-
-BLOGPOSTS = "static/posts.json"
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'static')
+BLOGPOSTS = os.path.join(DATA_DIR, 'posts.json')
 
 
 def load_json(filepath):
