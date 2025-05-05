@@ -4,7 +4,7 @@ Data handling for Masterblog API
 
 import json
 
-BLOGPOSTS = "data/posts.json"
+BLOGPOSTS = "static/posts.json"
 
 
 def load_json(filepath):
@@ -91,7 +91,7 @@ def sort_posts(posts, sort_key, direction):
     :return: Sorted list of posts.
     """
     reverse = (direction == "desc")
-    return sorted(posts, key=lambda x: x[sort_key], reverse=reverse)
+    return sorted(posts, key=lambda x: x[sort_key].lower(), reverse=reverse)
 
 
 def validate_post_data(data):
