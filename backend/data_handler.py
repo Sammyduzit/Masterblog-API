@@ -4,6 +4,7 @@ Data handling for Masterblog API
 
 import json
 
+
 BLOGPOSTS = "static/posts.json"
 
 
