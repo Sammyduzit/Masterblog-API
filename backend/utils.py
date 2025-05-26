@@ -1,3 +1,7 @@
+"""
+Utility functions for Masterblog API
+"""
+
 def validate_sorting(sort, direction, allowed_fields):
     """
     Validate sorting parameters for POST queries.
