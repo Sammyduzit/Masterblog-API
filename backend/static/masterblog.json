@@ -153,7 +153,7 @@
         }
       }
     },
-    "api/posts/{post_id}": {
+    "/api/posts/{post_id}": {
       "put": {
         "summary": "Updates a post",
         "description": "Updates an existing post by ID",
@@ -298,7 +298,7 @@
         }
       }
     },
-    "api/posts/search": {
+    "/api/posts/search": {
       "get" : {
         "summary": "Searches posts",
         "description": "Searches for posts by title or content",
