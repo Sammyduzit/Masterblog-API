@@ -2,18 +2,19 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import data_handler
 from flask_swagger_ui import get_swaggerui_blueprint
+from utils import validate_sorting, validate_post_data, sort_posts
 
 app = Flask(__name__)
 CORS(app)
 
-SWAGGER_URL="/api/docs"                 # (1) swagger endpoint e.g. HTTP://localhost:5002/api/docs
-API_URL="/static/masterblog.json"       # (2) ensure you create this dir and file
+SWAGGER_URL="/api/docs"
+API_URL="/static/masterblog.json"
 
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': 'Masterblog API'    # (3) You can change this if you like
+        'app_name': 'Masterblog API'
     }
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
@@ -55,19 +56,20 @@ def list_posts():
         - if successful: (sorted list as JSON, status code)
         - if unsuccessful: (error message, status code)
     """
-    posts = data_handler.get_all_posts()
+    posts = data_handler.load_blog_posts()
     sort = request.args.get("sort")
     direction = request.args.get("direction")
 
     if not sort:
         return success_response(posts)
 
-    is_valid, errors = data_handler.validate_sorting(sort, direction)
+    allowed_fields = data_handler.get_all_fields()
+    is_valid, errors = validate_sorting(sort, direction, allowed_fields)
     if not is_valid:
         return error_response("Invalid sorting parameters", 400, errors)
 
     try:
-        sorted_posts = data_handler.sort_posts(posts, sort, direction)
+        sorted_posts = sort_posts(posts, sort, direction)
         return success_response(sorted_posts)
     except KeyError as e:
         return error_response(f"Missing key in post data {e}", 500)
@@ -87,7 +89,8 @@ def add_post():
         return error_response("Request must be JSON", 400)
 
     data = request.get_json()
-    is_valid, errors = data_handler.validate_post_data(data)
+    required_fields = data_handler.get_all_fields()
+    is_valid, errors = validate_post_data(data, required_fields)
 
     if not is_valid:
         return error_response("Invalid post data", 400, errors)
@@ -108,21 +111,20 @@ def delete_post(post_id):
         - if successful: (success message as JSON, status code)
         - if unsuccessful: (error message, status code)
     """
-    posts = data_handler.get_all_posts()
+    posts = data_handler.load_blog_posts()
     initial_number_of_posts = len(posts)
 
     posts = [post for post in posts if post["id"] != post_id]
 
     if len(posts) < initial_number_of_posts:
         try:
-            data_handler.save_all_posts(posts)
+            data_handler.save_blog_posts(posts)
             return success_response({"message": f"Post with id '{post_id}' has been deleted successfully."})
         except Exception as e:
             return error_response("Server error while deleting post",
                                   500, f"error: {e}")
     else:
         return error_response(f"No post with id <{post_id}> found.", 404)
-
 
 
 @app.route("/api/posts/<int:post_id>", methods=["PUT"])
@@ -137,7 +139,7 @@ def update_post(post_id):
     if not request.is_json:
         return error_response("Request must be JSON", 400)
 
-    posts = data_handler.get_all_posts()
+    posts = data_handler.load_blog_posts()
     post = next((post for post in posts if post["id"] == post_id), None)
 
     if not post:
@@ -151,12 +153,11 @@ def update_post(post_id):
         return error_response("Invalid update data", 400, error)
 
     try:
-        data_handler.save_all_posts(posts)
+        data_handler.save_blog_posts(posts)
         return success_response(post)
     except Exception as e:
         return error_response("Server error while updating post",
                               500, f"error: {e}")
-
 
 
 @app.route("/api/posts/search", methods=["GET"])
@@ -168,7 +169,7 @@ def search_post():
         - if unsuccessful: (error message, status code)
     """
     try:
-        posts = data_handler.get_all_posts()
+        posts = data_handler.load_blog_posts()
         title = request.args.get("title")
         content = request.args.get("content")
 
